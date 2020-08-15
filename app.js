@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("express");
-const db = require(`${__dirname}/userDB.js`);
+const userDB = require(`${__dirname}/userDB.js`);
 
 const app = express();
 
@@ -9,6 +9,7 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const db = new userDB();
 db.connect();
 
 app.get("/", (req, res) => {

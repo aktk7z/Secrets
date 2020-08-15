@@ -21,3 +21,5 @@ class userDB {
     this.User = mongoose.model("User", this.userSchema);
   }
 }
+
+module.exports = userDB;
