@@ -3,7 +3,7 @@ const dbConnector = require(`${__dirname}/dbConnector.js`);
 const encrypt = require("mongoose-encryption");
 
 const dbName = "userDB";
-const secret = "Secret Words.";
+const secret = process.env.SECRET;
 
 class userDB {
   constructor() {

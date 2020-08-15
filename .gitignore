@@ -1,6 +1,9 @@
 # DB Info
 dbConnector.js
 
+# dotenv
+.env
+
 # Logs
 logs
 *.log
