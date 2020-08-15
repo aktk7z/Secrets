@@ -1,8 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("express");
-const userDB = require(`${__dirname}/userDB.js`);
 
+const userDB = require(`${__dirname}/userDB.js`);
 const app = express();
 
 app.use(express.static("public"));
