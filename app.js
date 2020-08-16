@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("express");
+const md5 = require("md5");
 
 const userDB = require(`${__dirname}/userDB.js`);
 const app = express();
@@ -28,7 +29,7 @@ app
       if (err) {
         console.log(err);
       } else {
-        if (result && result.password === req.body.password) {
+        if (result && result.password === md5(req.body.password)) {
           res.render("secrets");
         }
       }
@@ -43,7 +44,7 @@ app
   .post((req, res) => {
     const newUser = new db.User({
       userName: req.body.username,
-      password: req.body.password,
+      password: md5(req.body.password),
     });
 
     newUser.save();

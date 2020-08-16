@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 const dbConnector = require(`${__dirname}/dbConnector.js`);
-const encrypt = require("mongoose-encryption");
+const md5 = require("md5");
 
 const dbName = "userDB";
-const secret = process.env.SECRET;
 
 class userDB {
   constructor() {
@@ -18,11 +17,6 @@ class userDB {
         type: String,
         required: [true, "Need User Name"],
       },
-    });
-
-    this.userSchema.plugin(encrypt, {
-      secret: secret,
-      encryptedFields: ["password"],
     });
 
     this.User = mongoose.model("User", this.userSchema);
