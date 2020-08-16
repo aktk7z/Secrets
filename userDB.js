@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const dbConnector = require(`${__dirname}/dbConnector.js`);
-const md5 = require("md5");
-
 const dbName = "userDB";
 
 class userDB {
