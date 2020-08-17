@@ -4,8 +4,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("express");
 
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
+const session = require("express-session");
+const passport = require("passport");
 
 const userDB = require(`${__dirname}/userDB.js`);
 const app = express();
@@ -13,6 +13,16 @@ const app = express();
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    secret: "My Little Secret.", // ToDo: move to dotenv file
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 const db = new userDB();
 db.connect();
@@ -27,23 +37,19 @@ app
     res.render("login");
   })
   .post((req, res) => {
-    db.User.findOne({ userName: req.body.username }, (err, foundUser) => {
+    const user = new db.User({
+      username: req.body.username,
+      password: req.body.password,
+    });
+
+    req.login(user, (err) => {
       if (err) {
         console.log(err);
+        res.redirect("/login");
       } else {
-        if (foundUser) {
-          bcrypt.compare(req.body.password, foundUser.password, function (
-            err,
-            result
-          ) {
-            if (err) {
-              res.send(err);
-            }
-            if (result === true) {
-              res.render("secrets");
-            }
-          });
-        }
+        passport.authenticate("local")(req, res, () => {
+          res.redirect("/secrets");
+        });
       }
     });
   });
@@ -54,19 +60,34 @@ app
     res.render("register");
   })
   .post((req, res) => {
-    bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-      if (err) {
-        res.send(err);
+    db.User.register(
+      { username: req.body.username },
+      req.body.password,
+      (err, user) => {
+        if (err) {
+          console.log(err);
+          res.redirect("/register");
+        } else {
+          passport.authenticate("local")(req, res, () => {
+            res.redirect("/secrets");
+          });
+        }
       }
-      const newUser = new db.User({
-        userName: req.body.username,
-        password: hash,
-      });
-
-      newUser.save();
-      res.render("secrets");
-    });
+    );
   });
+
+app.route("/secrets").get((req, res) => {
+  if (req.isAuthenticated()) {
+    res.render("secrets");
+  } else {
+    res.redirect("/login");
+  }
+});
+
+app.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect("/login");
+});
 
 app.listen(3000, () => {
   console.log("Server started on port 3000");
