@@ -18,6 +18,7 @@ class userDB {
       username: String,
       password: String,
       googleId: String,
+      secret: String,
     });
 
     this.userSchema.plugin(passportLocalMongoose);
