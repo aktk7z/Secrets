@@ -32,6 +32,19 @@ app.get("/", (req, res) => {
 });
 
 app
+  .route("/auth/google")
+  .get(passport.authenticate("google", { scope: ["profile"] }));
+
+app
+  .route("/auth/google/secrets")
+  .get(
+    passport.authenticate("google", { failureRedirect: "/login" }),
+    (req, res) => {
+      res.redirect("/secrets");
+    }
+  );
+
+app
   .route("/login")
   .get((req, res) => {
     res.render("login");
